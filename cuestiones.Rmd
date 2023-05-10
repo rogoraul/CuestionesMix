@@ -60,16 +60,26 @@ Cuestion 3
 ```{r}
 us <- read_csv("data/UScereal.csv")
 
-reglaboxplot <- function(x) {
-  iqr <- quantile(x, probs = 0.75, na.rm=T) - quantile(x, probs = 0.25, na.rm=T)
-  maximo <- quantile(x, probs = 0.75,na.rm=T) + 1.5 * iqr
-  minimo <- quantile(x, probs = 0.25,na.rm=T) - 1.5 * iqr
-  outliers <- x < minimo | x > maximo
-  return(outliers)
+reglahampel <- function(x) { 
+  res <- ifelse(abs(x - median(x, na.rm=T)) > (3 * mad(x, na.rm=T)), TRUE, FALSE)
+  return(res)
 }
-l <- reglaboxplot(us$protein)
 
-us[]
+metodos <- list(reglahampel=reglahampel)
+
+us_outliers <- us %>%
+  mutate(across(fat,
+                list(
+                  outlier_reglahampel= metodos$reglahampel)))
+
+# eliminamos outliers
+us_outliers <- us_outliers %>% 
+  filter(fat_outlier_reglahampel == FALSE)
+
+# desviacion tipica
+dv <- sd(us_outliers$fat)
+round(dv,3)
+
 ```
 
 
