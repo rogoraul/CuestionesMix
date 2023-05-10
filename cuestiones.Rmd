@@ -14,14 +14,14 @@ Cuestion 1
 ```{r}
 library(tidyverse)
 
-texto <- "Pues sepa Vuestra Merced, ante todas cosas, que a mí llaman Lázaro de Tormes, hijo de Tomé González y de Antona Pérez, naturales de Tejares, aldea de Salamanca. Mi nacimiento fue dentro del río Tormes, por la cual causa tomé el sobrenombre; y fue de esta manera: mi padre, que Dios perdone, tenía cargo de proveer una molienda de una aceña que está ribera de aquel río, en la cual fue molinero más de quince años; y, estando mi madre una noche en la aceña, preñada de mí, tomóle el parto y parióme allí. De manera que con verdad me puedo decir nacido en el río. Pues siendo yo niño de ocho años, achacaron a mi padre ciertas sangrías mal hechas en los costales de los que allí a moler venían, por lo cual fue preso, y confesó y no negó, y padeció persecución por justicia. Espero en Dios que está en la gloria, pues el Evangelio los llama bienaventurados. En este tiempo se hizo cierta armada contra moros, entre los cuales fue mi padre (que a la sazón estaba desterrado por el desastre ya dicho), con cargo de acemilero de un caballero que allá fue. Y con su señor, como leal criado, feneció su vida. Mi viuda madre, como sin marido y sin abrigo se viese, determinó arrimarse a los buenos por ser uno de ellos, y vínose a vivir a la ciudad y alquiló una casilla y metióse a guisar de comer a ciertos estudiantes, y lavaba la ropa a ciertos mozos de caballos del comendador de la Magdalena, de manera que fue frecuentando las caballerizas."
+texto<-"Pues sepa Vuestra Merced, ante todas cosas, que a mí llaman Lázaro de Tormes, hijo de Tomé González y de Antona Pérez, naturales de Tejares, aldea de Salamanca. Mi nacimiento fue dentro del río Tormes, por la cual causa tomé el sobrenombre; y fue de esta manera: mi padre, que Dios perdone, tenía cargo de proveer una molienda de una aceña que está ribera de aquel río, en la cual fue molinero más de quince años; y, estando mi madre una noche en la aceña, preñada de mí, tomóle el parto y parióme allí. De manera que con verdad me puedo decir nacido en el río. Pues siendo yo niño de ocho años, achacaron a mi padre ciertas sangrías mal hechas en los costales de los que allí a moler venían, por lo cual fue preso, y confesó y no negó, y padeció persecución por justicia. Espero en Dios que está en la gloria, pues el Evangelio los llama bienaventurados. En este tiempo se hizo cierta armada contra moros, entre los cuales fue mi padre (que a la sazón estaba desterrado por el desastre ya dicho), con cargo de acemilero de un caballero que allá fue. Y con su señor, como leal criado, feneció su vida. Mi viuda madre, como sin marido y sin abrigo se viese, determinó arrimarse a los buenos por ser uno de ellos, y vínose a vivir a la ciudad y alquiló una casilla y metióse a guisar de comer a ciertos estudiantes, y lavaba la ropa a ciertos mozos de caballos del comendador de la Magdalena, de manera que fue frecuentando las caballerizas."
 
 texto2 <- toupper(texto)
 
 a <- str_count(texto2, "\\s+[AEIOU]")
 a # Hay 57
 
-b <- any(table(strsplit(texto2, "")) == 236)
+b <- any(table(strsplit(texto2, "")) == 179)
 b # False
 
 c <- sum(grepl("\\s", unlist(strsplit(texto, ""))))
@@ -38,11 +38,39 @@ Cuestion 2
 ```{r}
 nosotros <- read_tsv("data/Nosotros.tsv")
 names(nosotros)[1] <- "fecha"
-nosotros$fecha <- as.Date(nosotros$fecha)
 
+nosotros2 <- nosotros
 
-sum(nosotros$Age)
+nosotros$fecha <- as.Date(nosotros$fecha, format = "%d/%m/%Y")
+nosotros <- na.omit(nosotros)
 
+nosotros2$fecha <- as.Date(nosotros2$fecha, format = "%d-%m-%Y")
+nosotros2 <- na.omit(nosotros2)
+
+nosotros3 <- rbind(nosotros, nosotros2)
+
+fecha <- difftime(nosotros3$fecha, "2021-02-03", units = "days")
+fecha2 <- abs(fecha) / 365
+
+suma <- sum(fecha2)
+round(suma, 3)
 ```
+
+Cuestion 3
+```{r}
+us <- read_csv("data/UScereal.csv")
+
+reglaboxplot <- function(x) {
+  iqr <- quantile(x, probs = 0.75, na.rm=T) - quantile(x, probs = 0.25, na.rm=T)
+  maximo <- quantile(x, probs = 0.75,na.rm=T) + 1.5 * iqr
+  minimo <- quantile(x, probs = 0.25,na.rm=T) - 1.5 * iqr
+  outliers <- x < minimo | x > maximo
+  return(outliers)
+}
+l <- reglaboxplot(us$protein)
+
+us[]
+```
+
 
 
